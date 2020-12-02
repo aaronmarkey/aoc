@@ -246,21 +246,22 @@ def go(inp, value):
 
     data.sort()
     mid = int(value / 2)
-    
+
     mid_idx = -1
     for idx, num in enumerate(data):
         mid_idx = idx
         if num == mid or num > mid:
             break
-            
-    left = data[:mid_idx+1]
+
+    left = data[: mid_idx + 1]
     right = data[mid_idx:]
-    
+
     left_num, right_num = get_left_right(left, right, value)
-    
+
     if left_num and right_num:
         return left_num * right_num
     return None
-    
+
+
 if __name__ == "__main__":
     print(go(inp_raw, 2020))
