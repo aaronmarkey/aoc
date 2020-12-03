@@ -91,7 +91,6 @@ def get_index(width, line_number, slope):
 def part_one(filepath, slope):
     tree_count = 0
     for line_num, line in enumerate(utils.read_lines(filepath, strip=True)):
-        # for line_num, line in enumerate(test_lines):
         index = get_index(len(line), line_num, slope)
         if index != -1 and is_tree(line[index]):
             tree_count += 1
