@@ -56,7 +56,7 @@ class Rule:
     def is_valid_password_for_sled(self, password):
         count = sum([1 for char in password if char == self.char])
         return self.min <= count and count <= self.max
-        
+
     def is_valid_password_for_santa(self, password):
         pos_min = password[self.min - 1] == self.char
         pos_max = password[self.max - 1] == self.char
