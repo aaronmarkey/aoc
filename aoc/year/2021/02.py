@@ -74,6 +74,7 @@ class Direction(Enum):
 
 
 class Position:
+
     def __init__(self, x: int = 0, y: int = 0) -> None:
         self.x = x
         self.y = y
@@ -88,6 +89,22 @@ class Position:
 
     def combined(self) -> int:
         return self.x * self.y
+
+
+class AdvancedPosition(Position):
+
+    def __init__(self, x: int = 0, y: int = 0, aim: int = 0) -> None:
+        super().__init__(x, y)
+        self.aim = aim
+
+    def move(self, direction: Direction, amount: int) -> None:
+        if direction == Direction.forward:
+            self.x += amount
+            self.y += self.aim * amount
+        elif direction == Direction.up:
+            self.aim -= amount
+        elif direction == Direction.down:
+            self.aim += amount
 
 
 def get_directions(filename: str) -> Tuple[Direction, int]:
@@ -111,3 +128,16 @@ if __name__ == "__main__":
         position.move(direction, amount)
     print(f"{position.x=}, {position.y=}")
     print(f"{position.combined()=}")
+
+    test_ad_position = AdvancedPosition()
+    for direction, amount in get_directions(test_filename):
+        test_ad_position.move(direction, amount)
+    print(f"{test_ad_position.x=}, {test_ad_position.y=}")
+    print(f"{test_ad_position.combined()=}")
+
+    ad_position = AdvancedPosition()
+    for direction, amount in get_directions(filename):
+        ad_position.move(direction, amount)
+    print(f"{ad_position.x=}, {ad_position.y=}")
+    print(f"{ad_position.combined()=}")
+
