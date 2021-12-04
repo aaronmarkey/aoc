@@ -69,40 +69,101 @@ Finally, to find the life support rating, multiply the oxygen generator rating (
 Use the binary numbers in your diagnostic report to calculate the oxygen generator rating and CO2 scrubber rating, then multiply them together. What is the life support rating of the submarine? (Be sure to represent your answer in decimal, not binary.)
 
 """
-from typing import List
+from functools import reduce
+from typing import List, Optional, Tuple
 
 from aoc import utils
 
 
-def calculate_binary_sum(filename: str) -> List[int]:
-    summed = []
-    count = 0
-    for line in utils.read_lines(filename, True):
-        if line:
-            if summed == []:
-                summed = [0 for _ in range(len(line))]
-            parsed = [int(x) for x in line]
-            for idx, (s, p) in enumerate(zip(summed, parsed)):
-                summed[idx] = s + p
-            count += 1
-    
-    gamma = ""
-    epsilon = ""
-    for value in summed:
-        if value * 2 > count:
-            gamma += "1"
-            epsilon += "0"
+class Diagnostic:
+
+    def __init__(self, values: List[str]) -> None:
+        self.values = values
+
+    def _threshold(self, values) -> int:
+        return round(len(values) / 2)
+
+    def _get_sums(self, values: List[str]) -> List[int]:
+        sums = [0 for _ in range(len(values[0]))]
+        for value in values:
+            parsed = [int(x) for x in value]
+            for idx, (s, p) in enumerate(zip(sums, parsed)):
+                sums[idx] = s + p
+        return sums
+
+    def _this_is_what_im_looking_for(self, values: List[str], number_of_ones: int, most: bool) -> int:
+        threshold = self._threshold(values)
+        number_of_zeros = len(values) - number_of_ones
+        if most:
+            return 1 if number_of_ones >= threshold else 0
         else:
-            gamma += "0"
-            epsilon += "1"
-    gamma = int(gamma, 2)
-    epsilon = int(epsilon, 2)
-    return gamma * epsilon
+            if number_of_zeros < number_of_ones:
+                return 0
+            elif number_of_zeros > number_of_ones:
+                return 1
+            return 0
+
+    def _get_gamma_and_sigma(self, values) -> Tuple[int]:
+        sums = self._get_sums(values)
+        gamma = ""
+        epsilon = ""
+        for value in sums:
+            g = self._this_is_what_im_looking_for(values, value, True)
+            gamma += str(g)
+            epsilon += str(0 if g == 1 else 1)
+        gamma = int(gamma, 2)
+        epsilon = int(epsilon, 2)
+        return gamma, epsilon
+
+    def _filter_oxygen_or_co2(self, most: bool, values: Optional[List[str]] = None, index: int = 0) -> int:
+        if not values:
+            values = self.values
+        elif len(values) == 1:
+            return values
+
+        filtered = []
+
+        sums = self._get_sums(values)
+        look_for = self._this_is_what_im_looking_for(values, sums[index], most)
+        for value in values:
+            if int(value[index]) == look_for:
+                filtered.append(value)
+        return self._filter_oxygen_or_co2(most, filtered, index + 1)
+
+    def _filter_oxygen(self):
+        return self._filter_oxygen_or_co2(True)
+
+    def _filter_co2(self):
+        return self._filter_oxygen_or_co2(False)
+
+
+    def _get_oxygen_and_co2(self):
+        oxy = self._filter_oxygen()[0]
+        co2 = self._filter_co2()[0]
+
+        oxy = int(oxy, 2)
+        co2 = int(co2, 2)
+        return oxy, co2
+
+
+    def get_power_consumption(self) -> int:
+        return reduce(lambda x, y: x * y, self._get_gamma_and_sigma(self.values))
+
+    def get_life_support_rating(self) -> int:
+        return reduce(lambda x, y: x * y, self._get_oxygen_and_co2())
 
 
 if __name__ == "__main__":
     test_filename = "2021/03-test.txt"
     filename = "2021/03.txt"
-    
-    print(calculate_binary_sum(test_filename))
-    print(calculate_binary_sum(filename))
+
+    test_values = [line for line in utils.read_lines(test_filename, True) if line]
+    values = [line for line in utils.read_lines(filename, True) if line]
+
+    test_diag = Diagnostic(test_values)
+    print(f"Test Power: {test_diag.get_power_consumption()}")
+    print(f"Test Life: {test_diag.get_life_support_rating()}")
+
+    diag = Diagnostic(values)
+    print(f"Real Power: {diag.get_power_consumption()}")
+    print(f"Real Life: {diag.get_life_support_rating()}")
