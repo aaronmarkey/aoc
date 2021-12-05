@@ -75,7 +75,7 @@ from aoc import utils
 
 
 class BingoBoard:
-    def __init__(self, values: Tuple[int], size: int) -> None:
+    def __init__(self, values: Tuple[int, ...], size: int) -> None:
         self.values = values
         self.size = size
 
@@ -110,7 +110,7 @@ class BingoBoard:
         return tuple(winning_numbers)
 
     @property
-    def marked_numbers(self) -> Tuple[int]:
+    def marked_numbers(self) -> Tuple[int, ...]:
         return tuple(self._marked_values)
 
     def mark(self, value: int) -> None:
@@ -145,7 +145,7 @@ class BingoGame:
         return False, -1
 
 
-def parser(filename: str) -> Tuple[Tuple[int], Tuple[Tuple[int], ...]]:
+def parser(filename: str) -> Tuple[Tuple[int, ...], Tuple[Tuple[int, ...], ...]]:
     guesses = None
     boards = []
     current_board = []
