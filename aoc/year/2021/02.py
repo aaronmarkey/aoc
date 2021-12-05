@@ -74,7 +74,6 @@ class Direction(Enum):
 
 
 class Position:
-
     def __init__(self, x: int = 0, y: int = 0) -> None:
         self.x = x
         self.y = y
@@ -92,7 +91,6 @@ class Position:
 
 
 class AdvancedPosition(Position):
-
     def __init__(self, x: int = 0, y: int = 0, aim: int = 0) -> None:
         super().__init__(x, y)
         self.aim = aim
@@ -140,4 +138,3 @@ if __name__ == "__main__":
         ad_position.move(direction, amount)
     print(f"{ad_position.x=}, {ad_position.y=}")
     print(f"{ad_position.combined()=}")
-

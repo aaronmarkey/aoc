@@ -76,7 +76,6 @@ from aoc import utils
 
 
 class Diagnostic:
-
     def __init__(self, values: List[str]) -> None:
         self.values = values
 
@@ -136,7 +135,6 @@ class Diagnostic:
     def _filter_co2(self):
         return self._filter_oxygen_or_co2(False)
 
-
     def _get_oxygen_and_co2(self):
         oxy = self._filter_oxygen()[0]
         co2 = self._filter_co2()[0]
@@ -144,7 +142,6 @@ class Diagnostic:
         oxy = int(oxy, 2)
         co2 = int(co2, 2)
         return oxy, co2
-
 
     def get_power_consumption(self) -> int:
         return reduce(lambda x, y: x * y, self._get_gamma_and_sigma(self.values))
