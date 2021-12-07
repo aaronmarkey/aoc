@@ -12,11 +12,11 @@ Furthermore, you reason, a new lanternfish would surely need slightly longer bef
 
 So, suppose you have a lanternfish with an internal timer value of 3:
 
-	After one day, its internal timer would become 2.
-	After another day, its internal timer would become 1.
-	After another day, its internal timer would become 0.
-	After another day, its internal timer would reset to 6, and it would create a new lanternfish with an internal timer of 8.
-	After another day, the first lanternfish would have an internal timer of 5, and the second lanternfish would have an internal timer of 7.
+    After one day, its internal timer would become 2.
+    After another day, its internal timer would become 1.
+    After another day, its internal timer would become 0.
+    After another day, its internal timer would reset to 6, and it would create a new lanternfish with an internal timer of 8.
+    After another day, the first lanternfish would have an internal timer of 5, and the second lanternfish would have an internal timer of 7.
 
 A lanternfish that creates a new fish resets its timer to 6, not 7 (because 0 is included as a valid timer value). The new lanternfish starts with an internal timer of 8 and does not start counting down until the next day.
 
@@ -68,58 +68,58 @@ from aoc import utils
 
 
 def parse(filename: str) -> Tuple[int, ...]:
-	data = utils.read_file(filename)
-	return tuple(int(x) for x in data.strip().split(","))
+    data = utils.read_file(filename)
+    return tuple(int(x) for x in data.strip().split(","))
 
 
 def simulate_lanternfish(fishes: Tuple[int, ...], days: int) -> int:
-	NEW_REPRO_RATE = 8
-	OLD_REPRO_RATE = 6
+    NEW_REPRO_RATE = 8
+    OLD_REPRO_RATE = 6
 
-	fish_map = [0 for _ in range(NEW_REPRO_RATE + 1)]
-	for fish in fishes:
-		fish_map[fish] += 1
+    fish_map = [0 for _ in range(NEW_REPRO_RATE + 1)]
+    for fish in fishes:
+        fish_map[fish] += 1
 
-	count = len(fishes)
-	number_of_fish_to_add = 0
-	for day in range(days):
-		new_map = [0 for _ in range(NEW_REPRO_RATE + 1)]
+    count = len(fishes)
+    number_of_fish_to_add = 0
+    for day in range(days):
+        new_map = [0 for _ in range(NEW_REPRO_RATE + 1)]
 
-		for idx, fish_count in enumerate(fish_map):
-			if idx == 0:
-				number_of_fish_to_add += fish_count
-			else:
-				new_map[idx-1] = fish_count
+        for idx, fish_count in enumerate(fish_map):
+            if idx == 0:
+                number_of_fish_to_add += fish_count
+            else:
+                new_map[idx-1] = fish_count
 
-		if number_of_fish_to_add > 0:
-			new_map[OLD_REPRO_RATE] += number_of_fish_to_add
-			new_map[NEW_REPRO_RATE] += number_of_fish_to_add
-			count += number_of_fish_to_add
-			number_of_fish_to_add = 0
-		fish_map = new_map
-	return count
+        if number_of_fish_to_add > 0:
+            new_map[OLD_REPRO_RATE] += number_of_fish_to_add
+            new_map[NEW_REPRO_RATE] += number_of_fish_to_add
+            count += number_of_fish_to_add
+            number_of_fish_to_add = 0
+        fish_map = new_map
+    return count
 
 
 
 
 if __name__ == "__main__":
-	test_filename = "2021/06-test.txt"
-	filename = "2021/06.txt"
+    test_filename = "2021/06-test.txt"
+    filename = "2021/06.txt"
 
-	days_18 = 18
-	days_80 = 80
-	days_256 = 256
+    days_18 = 18
+    days_80 = 80
+    days_256 = 256
 
-	test_sim_18 = simulate_lanternfish(parse(test_filename), days_18)
-	test_sim_80 = simulate_lanternfish(parse(test_filename), days_80)
-	test_sim_256 = simulate_lanternfish(parse(test_filename), days_256)
-	print(f"{days_18} test: {test_sim_18}")
-	print(f"{days_80} test: {test_sim_80}")
-	print(f"{days_256} test: {test_sim_256}")
+    test_sim_18 = simulate_lanternfish(parse(test_filename), days_18)
+    test_sim_80 = simulate_lanternfish(parse(test_filename), days_80)
+    test_sim_256 = simulate_lanternfish(parse(test_filename), days_256)
+    print(f"{days_18} test: {test_sim_18}")
+    print(f"{days_80} test: {test_sim_80}")
+    print(f"{days_256} test: {test_sim_256}")
 
-	sim_18 = simulate_lanternfish(parse(filename), days_18)
-	sim_80 = simulate_lanternfish(parse(filename), days_80)
-	sim_256 = simulate_lanternfish(parse(filename), days_256)
-	print(f"{days_18}: {sim_18}")
-	print(f"{days_80}: {sim_80}")
-	print(f"{days_256}: {sim_256}")
+    sim_18 = simulate_lanternfish(parse(filename), days_18)
+    sim_80 = simulate_lanternfish(parse(filename), days_80)
+    sim_256 = simulate_lanternfish(parse(filename), days_256)
+    print(f"{days_18}: {sim_18}")
+    print(f"{days_80}: {sim_80}")
+    print(f"{days_256}: {sim_256}")
