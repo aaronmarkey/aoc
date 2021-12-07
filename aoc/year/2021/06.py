@@ -89,7 +89,7 @@ def simulate_lanternfish(fishes: Tuple[int, ...], days: int) -> int:
             if idx == 0:
                 number_of_fish_to_add += fish_count
             else:
-                new_map[idx-1] = fish_count
+                new_map[idx - 1] = fish_count
 
         if number_of_fish_to_add > 0:
             new_map[OLD_REPRO_RATE] += number_of_fish_to_add
@@ -98,8 +98,6 @@ def simulate_lanternfish(fishes: Tuple[int, ...], days: int) -> int:
             number_of_fish_to_add = 0
         fish_map = new_map
     return count
-
-
 
 
 if __name__ == "__main__":
