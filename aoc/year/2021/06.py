@@ -61,7 +61,6 @@ After 256 days in the example above, there would be a total of 26984457539 lante
 How many lanternfish would there be after 256 days?
 
 """
-from collections import defaultdict
 from typing import Tuple
 
 from aoc import utils
