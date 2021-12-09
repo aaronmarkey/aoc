@@ -25,10 +25,8 @@ b    .  b    .  .    c  b    c  b    c
 .    f  e    f  .    f  e    f  .    f
  gggg    gggg    ....    gggg    gggg
 
-
- 2, 3, 5
- a, d, g
- b, c, e, f
+ 0, 6, 9
+ a, g
 
 So, to render a 1, only segments c and f would be turned on; the rest would be off. To render a 7, only segments a, c, and f would be turned on.
 
@@ -134,6 +132,7 @@ For each entry, determine all of the wire/segment connections and decode the fou
 
 """
 from collections import defaultdict
+from functools import reduce
 from typing import List
 
 from aoc import utils
@@ -143,65 +142,86 @@ class Display:
 
     _segment_count_for_number = {
         0: 6,
-        1: 2, #
+        1: 2,  #
         2: 5,
         3: 5,
-        4: 4, #
+        4: 4,  #
         5: 5,
         6: 6,
-        7: 3, #
-        8: 7, #
+        7: 3,  #
+        8: 7,  #
         9: 6,
     }
     _numbers_for_segment_count = defaultdict(list)
     for key, value in _segment_count_for_number.items():
         _numbers_for_segment_count[value].append(key)
 
-    _easy_numbers = [1, 4, 7, 8]
-
-
     def __init__(self, signals: List[str], output: List[str]) -> None:
         self.signals = signals
         self.output = output
-
-        self._easy_number_segments = [self._segment_count_for_number[num] for num in self._easy_numbers]
-
         self._init_output()
 
     def _init_output(self) -> None:
         self._output_segments = [len(o) for o in self.output]
-        self._known_segments = {}
-        self._correct_display_output = [-1 for _ in range(len(self.output))]
+        self._signal_to_number = {}
+        self._number_to_signal = {}
+        self._correct_display_output = []
 
         self._process_signals()
-        self._transform_easy()
+        self._transform()
+
+    def _signal_to_key(self, signal: str) -> str:
+        return "".join(sorted(signal))
 
     def _process_signals(self) -> None:
+        fives = []
+        sixes = []
         for signal in self.signals:
-            segment_count = len(signal)
-            if segment_count in self._easy_numbers:
-                self._known_segments[self._numbers_for_segment_count[segment_count][0]] = set(signal)
+            possible_numbers = self._numbers_for_segment_count[len(signal)]
+            len_of_signal = len(signal)
+            if len(possible_numbers) == 1:
+                # 1, 4, 7, 8
+                self._signal_to_number[self._signal_to_key(signal)] = possible_numbers[0]
+                self._number_to_signal[possible_numbers[0]] = self._signal_to_key(signal)
+            elif len_of_signal == 5:
+                fives.append(signal)
+            else:
+                sixes.append(signal)
 
-    def _transform_easy(self) -> None:
-        for idx, output in enumerate(self.output):
-            segment_count = len(output)
-            if segment_count in self._easy_number_segments:
-                final = self._numbers_for_segment_count[segment_count][0]
-                self._correct_display_output[idx] = final
-                if final not in self._known_segments:
-                    self._known_segments[final] = set(output)
+        fives_sets = [set(signal) for signal in fives]
+        five_common = reduce(lambda x, y: x & y, fives_sets)
+        for idx, five_set in enumerate(fives_sets):
+            # 2, 3, 5
+            unique = set(five_set) - five_common
+            if self._signal_to_key(unique) == self._number_to_signal[1]:
+                self._signal_to_number[self._signal_to_key(fives[idx])] = 3
+                self._number_to_signal[3] = self._signal_to_key(fives[idx])
+            elif len(unique & set(self._number_to_signal[4])) == 2:
+                self._signal_to_number[self._signal_to_key(fives[idx])] = 5
+                self._number_to_signal[5] = self._signal_to_key(fives[idx])
+            else:
+                self._signal_to_number[self._signal_to_key(fives[idx])] = 2
+                self._number_to_signal[2] = self._signal_to_key(fives[idx])
 
+        for signal in sixes:
+            # 0, 6, 9
+            if len(set(signal) & set(self._number_to_signal[4])) == 4:
+                self._signal_to_number[self._signal_to_key(signal)] = 9
+                self._number_to_signal[9] = self._signal_to_key(signal)
+            elif len(set(signal) & set(self._number_to_signal[5])) == 5:
+                self._signal_to_number[self._signal_to_key(signal)] = 6
+                self._number_to_signal[6] = self._signal_to_key(signal)
+            else:
+                self._signal_to_number[self._signal_to_key(signal)] = 0
+                self._number_to_signal[0] = self._signal_to_key(signal)
 
-    def _display_output(self) -> List[int]:
-        final = []
-
+    def _transform(self) -> None:
         for output in self.output:
-            segment_count = len(output)
-            if segment_count in self._easy_number_segments:
-                final.append(self._by_segment_count(len(output)))
-            elif segment_count == 6:
-                final.append(self._six_segment(output))
-        return final
+            try:
+                final = self._signal_to_number[self._signal_to_key(output)]
+            except KeyError:
+                final = -1
+            self._correct_display_output.append(final)
 
     def get_output_count(self, number: int) -> int:
         if number in [1, 4, 7, 8]:
@@ -212,9 +232,6 @@ class Display:
     @property
     def correct_display_output(self) -> List[int]:
         return self._correct_display_output
-
-
-
 
 
 def parse(filename: str):
@@ -244,9 +261,10 @@ def calculate_easy_output(filename: str) -> int:
 def calculate_display_output(filename: str) -> int:
     displays = get_displays(filename)
 
+    total = 0
     for display in displays:
-        print(display.correct_display_output)
-        print(display._known_segments)
+        total += int("".join([str(x) for x in display.correct_display_output]))
+    print(total)
 
 
 if __name__ == "__main__":
@@ -257,3 +275,4 @@ if __name__ == "__main__":
     calculate_easy_output(filename)
 
     calculate_display_output(test_filename)
+    calculate_display_output(filename)
