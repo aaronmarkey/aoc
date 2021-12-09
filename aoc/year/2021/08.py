@@ -142,14 +142,14 @@ class Display:
 
     _segment_count_for_number = {
         0: 6,
-        1: 2,  #
+        1: 2,
         2: 5,
         3: 5,
-        4: 4,  #
+        4: 4,
         5: 5,
         6: 6,
-        7: 3,  #
-        8: 7,  #
+        7: 3,
+        8: 7,
         9: 6,
     }
     _numbers_for_segment_count = defaultdict(list)
