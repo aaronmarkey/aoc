@@ -348,8 +348,6 @@ from typing import List, Tuple
 
 from aoc import utils
 
-MAX_ENERGY = 9
-
 
 def parse(filename: str) -> List[int]:
     octopi = []
@@ -439,12 +437,10 @@ class OctopiNetwork:
 
 def calculate_step(filename: str, width: int, steps: int) -> None:
     octopi = [Octopus(n) for n in parse(filename)]
-
     network = OctopiNetwork(octopi, width)
 
-    print("Before")
-    print(network)
-    print(os.linesep)
+    print("-" * 80)
+    print(f"Before{os.linesep}{network}{os.linesep}")
 
     first_sync = -1
     step_count = 0
@@ -459,6 +455,7 @@ def calculate_step(filename: str, width: int, steps: int) -> None:
             first_sync = step_count
 
     print(f"First Sync: {first_sync}")
+    print("-" * 80 + os.linesep)
 
 
 if __name__ == "__main__":
